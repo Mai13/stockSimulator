@@ -1,26 +1,25 @@
-
 import strategies
 import preprocessing
 import trade
 
-
-# TODO: set linter
-# TODO: set logger
 
 def main ():
 
     data = preprocessing.ReadData()
 
 
-    algorithm_data, test_data = data.preprocess()
+    algorithm_data, simulation_data = data.preprocess(['AAPL', 'HPE', 'RHT', 'STX', 'WDC'])
 
     wallet = trade.Porfolio(initial_money=100000)
 
+    print(algorithm_data.head())
+    print(algorithm_data.columns)
+
     strategy_one = strategies.ml()  # algorithm_data
-    strategy_two = strategies.dl()  # algorithm_data
+    strategy_two = strategies.dl(algorithm_data)  # algorithm_data
 
     # TODO: loop to keep doing it in every minute in test data
-
+    # TODO: start the grid search every "night"
     """
     
     wallet_along_time = []
