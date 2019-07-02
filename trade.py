@@ -42,10 +42,12 @@ class Porfolio():
                 if predictions.get(ticker) > current_values.get(ticker):
                     predicted_earnings = (predictions.get(ticker)-current_values.get(ticker)) / current_values.get(ticker)
                     if predicted_earnings < 0.5:
+                        """
                         print('heree')
                         print(self.money_to_spend * 0.5 * predicted_earnings)
                         print('current value is', current_values.get(ticker))
                         print((self.money_to_spend * 0.5 * predicted_earnings) / float(current_values.get(ticker)))
+                        """
                         number_of_actions = int(self.money_to_spend * 0.5 * predicted_earnings / float(current_values.get(ticker)))
                     else:
                         number_of_actions = int(self.money_to_spend * 0.5 / current_values.get(ticker)) # In case earnings of 500% are predicted

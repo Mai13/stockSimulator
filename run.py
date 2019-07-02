@@ -12,14 +12,15 @@ def main ():
 
     wallet = trade.Porfolio(initial_money=100000)
 
-    print(algorithm_data.head())
-    print(algorithm_data.columns)
+    # print(algorithm_data.head())
+    # print(algorithm_data.columns)
 
-    strategy_one = strategies.ml()  # algorithm_data
-    strategy_two = strategies.dl(algorithm_data)  # algorithm_data
+    # strategy_one = strategies.ml()  # algorithm_data
+    # strategy_two = strategies.dl(algorithm_data)  # algorithm_data
 
     # TODO: loop to keep doing it in every minute in test data
     # TODO: start the grid search every "night"
+    # TODO: Preprocessing has no shuffle if LSTM needs it we will do it later
     """
     
     wallet_along_time = []
@@ -33,8 +34,8 @@ def main ():
         strategy_two.fit(+row)
 
     """
-    strategy_one.predict()
-    strategy_two.predict()
+    # strategy_one.predict()
+    # strategy_two.predict()
 
     # TODO:link the models with the optimization strategy
 
