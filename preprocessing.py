@@ -33,7 +33,7 @@ class ReadData():
             train_dataframe['target'] = train_dataframe['price'].shift(-1, axis=0)
             train_dataframe.dropna(inplace=True)
             for col in train_dataframe.columns:
-                if col != 'target':
+                if col != 'target' and col != 'date':
                     train_dataframe[col] = preprocessing.scale(train_dataframe[col].values)
 
             train_data[tickers[cnt]] = train_dataframe
@@ -51,8 +51,9 @@ class ReadData():
             test_dataframe['target'] = test_dataframe['price'].shift(-1, axis=0)
             test_dataframe.dropna(inplace=True)
             for col in test_dataframe.columns:
-                if col != 'target':
+                if col != 'target' and col != 'date':
                     test_dataframe[col] = preprocessing.scale(test_dataframe[col].values)
+            print(test_dataframe.head())
             test_data[tickers[cnt]] = test_dataframe
             cnt += 1
 
