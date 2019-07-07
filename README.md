@@ -1,6 +1,6 @@
 # Stock Simulator Project
 
-## Un and running
+## Up and running
 
 The python version used for this code is python 3.7.1 
 
