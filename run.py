@@ -6,14 +6,33 @@ import trade
 def main ():
 
     data = preprocessing.ReadData()
-
-
-    algorithm_data, simulation_data = data.preprocess(['AAPL', 'HPE', 'RHT', 'STX', 'WDC'])
+    tickers = ['AAPL', 'HPE', 'RHT', 'STX', 'WDC']
+    algorithm_data, simulation_data = data.preprocess(tickers)
 
     wallet = trade.Porfolio(initial_money=100000)
 
     # print(algorithm_data.head())
     # print(algorithm_data.columns)
+
+    ml_predictions = {}
+    # TODO: The Time loops
+    for ticker in tickers:
+        # for ticker in ['RHT']:
+        print(f'-------   {ticker}   -------')
+        ml_strategy = strategies.ml()
+        ml_strategy.grid_search(algorithm_data.get(ticker)[['price', 'volume']].values,
+                                algorithm_data.get(ticker)[['target']].values,
+                                5,
+                                0.1,
+                                [[10, 30, 50, 70, 100], [3, 5, 7, 10, 15, 20]])
+        ml_strategy.train(algorithm_data.get(ticker)[['price', 'volume']].values,
+                          algorithm_data.get(ticker)[['target']].values)
+        print(simulation_data.get(ticker)[['price', 'volume']].values)
+        print(simulation_data.get(ticker)[['price', 'volume']].shape)
+        print(simulation_data.get(ticker).columns)
+        print(simulation_data.get(ticker).iloc[0, 1:3].values.reshape(1, -1).shape)
+        ml_predictions[ticker] = ml_strategy.predict(simulation_data.get(ticker).iloc[0, 1:3].values.reshape(1, -1))
+    print(ml_predictions)
 
     # strategy_one = strategies.ml()  # algorithm_data
     # strategy_two = strategies.dl(algorithm_data)  # algorithm_data

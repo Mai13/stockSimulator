@@ -1,6 +1,7 @@
 import pandas as pd
 
-class ReadData():
+
+class ReadData:
 
     def __init__(self):
 
@@ -13,8 +14,6 @@ class ReadData():
         for ticker in tickers:
             self.train_datasets.append(pd.read_csv(self.raw_data_path + str(ticker+'train_val_nan_droped.csv')))
             self.test_datasets.append(pd.read_csv(self.raw_data_path + str(ticker+'test_val_nan_droped.csv')))
-
-
 
     def preprocess(self, tickers):
 
@@ -53,7 +52,6 @@ class ReadData():
             for col in test_dataframe.columns:
                 if col != 'target' and col != 'date':
                     test_dataframe[col] = preprocessing.scale(test_dataframe[col].values)
-            print(test_dataframe.head())
             test_data[tickers[cnt]] = test_dataframe
             cnt += 1
 
