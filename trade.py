@@ -51,7 +51,7 @@ class Porfolio():
                         number_of_actions = int(self.money_to_spend * 0.5 * predicted_earnings / float(current_values.get(ticker)))
                     else:
                         number_of_actions = int(self.money_to_spend * 0.5 / current_values.get(ticker)) # In case earnings of 500% are predicted
-                    print(ticker, number_of_actions, current_values.get(ticker))
+                    # print(ticker, number_of_actions, current_values.get(ticker))
                     self.buy(ticker, number_of_actions, current_values.get(ticker))
 
         return self.money_to_spend
