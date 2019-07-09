@@ -15,14 +15,14 @@ def main ():
     period_between_re_tain = 480
     money_vs_time_ml = []
     # TODO: The Time loops
-    print(f'total time is {simulation_data.get("AAPL").shape[0]}')
+    # print(f'total time is {simulation_data.get("AAPL").shape[0]}')
     for minute in range(simulation_data.get('AAPL').shape[0]):
         ml_predictions = {}
         current_values = {}
         for ticker in tickers:
             print(cnt)
             print(f'-------   {ticker}   -------')
-            if cnt == 0 or float(cnt // period_between_re_tain).is_integer():
+            if cnt == 0 or float(cnt / period_between_re_tain).is_integer():
                 ml_strategy = strategies.ml()
                 ml_strategy.grid_search(algorithm_data.get(ticker)[['price', 'volume']].values,
                                         algorithm_data.get(ticker)[['target']].values,
@@ -35,8 +35,8 @@ def main ():
                                   ticker)
                 ml_predictions[ticker] = ml_strategy.predict(simulation_data.get(ticker).iloc[0, 1:3].values.reshape(1, -1),
                                                              ticker)
-                cnt += 1
             else:
+                print('heree')
 
                 ml_strategy.train(algorithm_data.get(ticker)[['price', 'volume']].values,
                                   algorithm_data.get(ticker)[['target']].values,
@@ -47,10 +47,12 @@ def main ():
             current_values[ticker] = algorithm_data.get(ticker).iloc[-1, 3]
             algorithm_data[ticker] = algorithm_data.get(ticker).append(simulation_data.get(ticker).iloc[0, :], ignore_index=True)
             simulation_data.get(ticker).drop(simulation_data.get(ticker).head(1).index, inplace=True)
-
+        cnt += 1
         money_ml = wallet_ml.optimize(ml_predictions, current_values, tickers)
         money_vs_time_ml.append(money_ml)
     money_vs_time_ml.append(wallet_ml.close_all(current_values, tickers))
+    # TODO: FINAL GRAPH
+    """
             # TODO: INCLUDE PERFORM STRATEGY
 
 
@@ -60,6 +62,7 @@ def main ():
     # TODO: loop to keep doing it in every minute in test data
     # TODO: start the grid search every "night"
     # TODO: Preprocessing has no shuffle if LSTM needs it we will do it later
+    """
     """
     
     wallet_along_time = []
@@ -72,6 +75,7 @@ def main ():
         strategy_one.fit(+row)
         strategy_two.fit(+row)
 
+    """
     """
     # strategy_one.predict()
     # strategy_two.predict()
@@ -88,6 +92,7 @@ def main ():
 
     total_amount = wallet.close_all(current_values, tickers)
     print('total amount of money: %s' % total_amount)
+    """
 
 if __name__ == "__main__":
 
