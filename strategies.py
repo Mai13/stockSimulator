@@ -2,14 +2,14 @@ class ml():
 
     def __init__(self):
 
-        self.model = 0
+        self.model = {}
 
-    def train(self, X_train, y_train):
+    def train(self, X_train, y_train, ticker):
 
 
-        self.model = self.model.fit(X_train, y_train)
+        self.model[ticker] = self.model.get(ticker).fit(X_train, y_train)
 
-    def grid_search(self, X_train, y_train, fold_number=5,
+    def grid_search(self, X_train, y_train, ticker, fold_number=5,
                     overfitting_threshold=0.1, parameters=[[20], [5]]):
 
         from sklearn.model_selection import TimeSeriesSplit
@@ -63,15 +63,15 @@ class ml():
             best_parameter_1 = parameters[0][0]
             best_parameter_2 = parameters[1][0]
 
-        self.model = RandomForestRegressor(random_state=2018,
+        self.model[ticker] = RandomForestRegressor(random_state=2018,
                                             n_estimators=best_parameter_1,
                                             max_features='auto',
                                             max_depth=best_parameter_2,
                                             ) # criterion='entropy'
 
-    def predict (self, x_to_predict):
+    def predict(self, x_to_predict, ticker):
 
-        return  self.model.predict(x_to_predict)
+        return self.model.get(ticker).predict(x_to_predict)
 
 
 

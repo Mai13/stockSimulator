@@ -9,38 +9,50 @@ def main ():
     tickers = ['AAPL', 'HPE', 'RHT', 'STX', 'WDC']
     algorithm_data, simulation_data = data.preprocess(tickers)
 
-    wallet = trade.Porfolio(initial_money=100000)
+    wallet_ml = trade.Porfolio(initial_money=100000)
 
-    # print(algorithm_data.head())
-    # print(algorithm_data.columns)
-
-    ml_predictions = {}
     cnt = 0
+    period_between_re_tain = 480
+    money_vs_time_ml = []
     # TODO: The Time loops
     print(f'total time is {simulation_data.get("AAPL").shape[0]}')
     for minute in range(simulation_data.get('AAPL').shape[0]):
-    for ticker in tickers:
-        if cnt == 0:
+        ml_predictions = {}
+        current_values = {}
+        for ticker in tickers:
+            print(cnt)
             print(f'-------   {ticker}   -------')
-            ml_strategy = strategies.ml()
-            ml_strategy.grid_search(algorithm_data.get(ticker)[['price', 'volume']].values,
-                                    algorithm_data.get(ticker)[['target']].values,
-                                    5,
-                                    0.1,
-                                    [[10, 30, 50, 70, 100], [3, 5, 7, 10, 15, 20]])
-            ml_strategy.train(algorithm_data.get(ticker)[['price', 'volume']].values,
-                              algorithm_data.get(ticker)[['target']].values)
-            ml_predictions[ticker] = ml_strategy.predict(simulation_data.get(ticker)[['price', 'volume']].values.reshape(1, -1))[0]
-            # TODO: remove first row from simulation
-            # TODO: Add that data to algorithm data
-            # TODO: Current value (price)
-            cnt += 1
-        elif cnt == 480:
-            cnt = 1
-        else:
-            # TODO: ONLY TRAIN
-        # TODO: INCLUDE PERFORM STRATEGY
-    print(ml_predictions)
+            if cnt == 0 or float(cnt // period_between_re_tain).is_integer():
+                ml_strategy = strategies.ml()
+                ml_strategy.grid_search(algorithm_data.get(ticker)[['price', 'volume']].values,
+                                        algorithm_data.get(ticker)[['target']].values,
+                                        ticker,
+                                        5,
+                                        0.1,
+                                        [[10, 30, 50, 70, 100], [3, 5, 7, 10, 15, 20]])
+                ml_strategy.train(algorithm_data.get(ticker)[['price', 'volume']].values,
+                                  algorithm_data.get(ticker)[['target']].values,
+                                  ticker)
+                ml_predictions[ticker] = ml_strategy.predict(simulation_data.get(ticker).iloc[0, 1:3].values.reshape(1, -1),
+                                                             ticker)
+                cnt += 1
+            else:
+
+                ml_strategy.train(algorithm_data.get(ticker)[['price', 'volume']].values,
+                                  algorithm_data.get(ticker)[['target']].values,
+                                  ticker)
+                ml_predictions[ticker] = ml_strategy.predict(
+                    simulation_data.get(ticker).iloc[0, 1:3].values.reshape(1, -1), ticker)
+
+            current_values[ticker] = algorithm_data.get(ticker).iloc[-1, 3]
+            algorithm_data[ticker] = algorithm_data.get(ticker).append(simulation_data.get(ticker).iloc[0, :], ignore_index=True)
+            simulation_data.get(ticker).drop(simulation_data.get(ticker).head(1).index, inplace=True)
+
+        money_ml = wallet_ml.optimize(ml_predictions, current_values, tickers)
+        money_vs_time_ml.append(money_ml)
+    money_vs_time_ml.append(wallet_ml.close_all(current_values, tickers))
+            # TODO: INCLUDE PERFORM STRATEGY
+
 
     # strategy_one = strategies.ml()  # algorithm_data
     # strategy_two = strategies.dl(algorithm_data)  # algorithm_data
