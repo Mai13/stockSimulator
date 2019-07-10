@@ -3,16 +3,15 @@ class Porfolio():
     def __init__(self, initial_money):
 
         self.money_to_spend = initial_money
-        self.data_path = 'some url path'
         self.open_positions = {}
-        self.current_actions = {"AAPL": [120, 6, 110]}  # TODO: Set to None
+        self.current_actions = {}
 
     def buy(self, ticker, quantity, current_value, stop_rate=0.03):
 
         self.money_to_spend = self.money_to_spend - quantity*current_value
         # current action structure exaple {"AAPL": [120, 6, 110]} buying price, quantity, stop
         print([current_value, quantity, current_value*stop_rate])
-        self.open_positions[ticker] = [current_value, quantity, current_value*stop_rate] # TODO: see if we insert a stop
+        self.open_positions[ticker] = [current_value, quantity, current_value*stop_rate]
 
 
     def sell(self, ticker, quantity, current_value):
