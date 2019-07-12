@@ -8,9 +8,8 @@ class Porfolio():
 
     def buy(self, ticker, quantity, current_value, stop_rate=0.03):
 
+        print(f'the ticker -- {ticker} -- Has been bought')
         self.money_to_spend = self.money_to_spend - quantity*current_value
-        # current action structure exaple {"AAPL": [120, 6, 110]} buying price, quantity, stop
-        print([current_value, quantity, current_value*stop_rate])
         self.open_positions[ticker] = [current_value, quantity, current_value*stop_rate]
 
 
@@ -37,7 +36,6 @@ class Porfolio():
 
                 self.check_investments(predictions, ticker, self.current_actions.get(ticker), current_values)
             else:
-
                 if predictions.get(ticker) > current_values.get(ticker):
                     predicted_earnings = (predictions.get(ticker)-current_values.get(ticker)) / current_values.get(ticker)
                     if predicted_earnings < 0.5:

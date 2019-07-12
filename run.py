@@ -18,14 +18,14 @@ def main():
     money_vs_time_ml = []
     ml_strategy = strategies.ml()
     print(f'total time is {simulation_data.get("AAPL").shape[0]}')
-    for minute in range(simulation_data.get('AAPL').shape[0]):
+    # for minute in range(simulation_data.get('AAPL').shape[0]):
+    for minute in range(3):
         ml_predictions = {}
         current_values = {}
         for ticker in tickers:
 
             try:
                 print(cnt)
-                print(f'-------   {ticker}   -------')
                 if cnt == 0 or float(cnt / period_between_re_tain).is_integer():
                     ml_strategy.grid_search(algorithm_data.get(ticker)[['price', 'volume']].values,
                                             algorithm_data.get(ticker)[['target']].values,
@@ -39,7 +39,6 @@ def main():
                     ml_predictions[ticker] = ml_strategy.predict(simulation_data.get(ticker).iloc[0, 1:3].values.reshape(1, -1),
                                                                  ticker)
                 else:
-                    print('heree')
 
                     ml_strategy.train(algorithm_data.get(ticker)[['price', 'volume']].values,
                                       algorithm_data.get(ticker)[['target']].values,
@@ -57,13 +56,12 @@ def main():
         cnt += 1
         money_ml = wallet_ml.optimize(ml_predictions, current_values, tickers)
         money_vs_time_ml.append(money_ml)
+    print(current_values)
     money_vs_time_ml.append(wallet_ml.close_all(current_values, tickers))
 
     plt.figure(figsize=(20, 10))
-    plt.plot(range(0, simulation_data.get('AAPL').shape[0] + 1), money_vs_time_ml)
+    plt.plot(range(0, 4), money_vs_time_ml) # simulation_data.get('AAPL').shape[0] + 1
     plt.savefig('time_evolution.png')
-
-    # TODO: FINAL GRAPH
 
 if __name__ == "__main__":
 

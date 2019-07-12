@@ -68,7 +68,7 @@ class ml():
         # print(f'Best parameter 1: {best_parameter_1}, Best parameter 2: {best_parameter_2}')
 
         if best_rsme == 0 and best_parameter_1 == 0 and best_parameter_2 == 0:
-
+            print(f'in ticker ------- {ticker} ------')
             print(f'The error is TRAIN {rmse_train/fold_number}, The error in TEST {rmse_test/fold_number}')
             print(f'There is probabliy an overfitting error, the simplest model will be applied')
             best_parameter_1 = parameters[0][0]
@@ -101,34 +101,66 @@ class dl():
 
         for i in range(int(round(self.sequence_lenght)), x_data.shape[0]):
 
-            x.append(x_data.iloc[i-int(round(self.sequence_lenght)):i, :])
-            y.append(y_data.iloc[i,:])
+            x.append(x_data.iloc[i-int(round(self.sequence_lenght)):i, 0:2])
+            y.append(y_data.iloc[i, -1])
 
         return x, y
 
-    def grid_search(self, X_train, y_train, ticker):
+    def grid_search(self, X_train, y_train, ticker, patience, ):
+
+        from keras.models import Sequential
+        from keras.layers import Dense, Dropout, LSTM, BatchNormalization
+        from keras.optimizers import adam
+        from keras.callbacks import EarlyStopping
+        from keras.models import load_model
+        import numpy as np
 
         sequenced_x, sequenced_y = self.preprocessing(X_train, y_train)
 
-        import tensorflow as ts
-
+        #TODO:
 
         model = Sequential()
-        model.add(LSTM(units=50, return_sequences=True, input_shape=(x_train.shape[1], 1)))
-        model.add(LSTM(units=50))
+        model.add(LSTM(units=128, return_sequences=True, input_shape=(x_train.shape[1], 1)))
+        model.add(Dropout(0.2))
+        model.add(BatchNormalization())
+
+        model.add(LSTM(units=128))
+        model.add(Dropout(0.2))
+        model.add(BatchNormalization())
+
+        model.add(Dense(32, activation='relu'))
+        model.add(Dropout(0.2))
+
         model.add(Dense(1, activation='linear'))
+
+        best_learning_rate = 0
+        best_score = 0
 
         for learning_rate in [0.001, 0.01, 0.1]:
 
             opt = adam(lr=learning_rate, decay=1e-6)
             model.compile(
-                loss=tf.keras.metrics.mean_squared_error,
+                loss='mae',
                 optimizer=opt,
-                metrics=tf.keras.metrics.RootMeanSquaredError(name='rmse'),
+                metrics=['mse']
             )
+            es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=patience)
             model.fit(
-                # TODO: Implement
+                x_train, y_train,
+                batch_size=BATCH_SIZE,
+                epochs=EPOCHS,
+                validation_data=(np.reshape(x_val, (x_val.shape[0], x_val.shape[1], 1)), np.array(y)[1000:1300]),
+                callbacks=[es]
             )
+            model.save(f'./models/{ticker}-{learning_rate}.h5')
+
+            val_score = model.predict(np.reshape(x_val, (x_val.shape[0], x_val.shape[1], 1)))
+
+            if best_score < val_score:
+
+                best_learning_rate = learning_rate
+
+        self.model[ticker] = load_model(f'./models/{ticker}-{best_learning_rate}.h5')
 
 
 
@@ -136,7 +168,12 @@ class dl():
     def train(self, data, parameters):
 
 
+
+        pass
+
+
     def predict (self, data):
+        pass
 
 
 
